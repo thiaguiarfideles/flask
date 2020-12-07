@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, simplejson
+from flask import Flask, jsonify
 import pyodbc 
 import json
 app = Flask(__name__)
@@ -12,15 +12,18 @@ def table():
     cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
     cursor = cnxn.cursor()
 
-    cursor.execute("select * from dbo.Estoque_prontonil") 
-    row = cursor.fetchone() 
-    html= '<table border="1" style="width:50%"><tr><th>PRODUTOS</th><th>NM_PRODUTO</th><th>CD_ESTOQUE</th><th>DS_ESTOQUE</th><th>DS_UNIDADE</th><th>QT_ESTOQUE</th><th>CD_MULTI_EMPRESA</th><th>DS_MULTI_EMPRESA</th></tr>'
-    while row: 
-        html += '<tr><td>'+str(row.PRODUTOS)+'</td><td>'+str(row.NM_PRODUTO)+'</td><td>'+str(row.CD_ESTOQUE)+'</td><td>'+str(row.DS_ESTOQUE)+'</td><td>'+str(row.DS_UNIDADE)+'</td><td>'+str(row.QT_ESTOQUE)+'</td><td>'+str(row.CD_MULTI_EMPRESA)+'</td><td>'+str(row.DS_MULTI_EMPRESA)+'</td></tr>'
-        row = cursor.fetchone()
-    html+= '</table>'
-    return = PCT.objects.filter(code__startswith='a').values('PRODUTOS', 'NM_PRODUTO')
-return JsonResponse({'results': list(results)})
+    for row in cursor.execute("select PRODUTOS, NM_PRODUTO, CD_ESTOQUE, DS_ESTOQUE, DS_UNIDADE, QT_ESTOQUE, CD_MULTI_EMPRESA, DS_MULTI_EMPRESA from dbo.Estoque_prontonil"):PRODUTOS, NM_PRODUTO, CD_ESTOQUE, DS_ESTOQUE, DS_UNIDADE, QT_ESTOQUE, CD_MULTI_EMPRESA, DS_MULTI_EMPRESA = row
+    rv = cursor.fetchall() 
+    Estoque_prontonil =[PRODUTOS, NM_PRODUTO, CD_ESTOQUE, DS_ESTOQUE, DS_UNIDADE, QT_ESTOQUE, CD_MULTI_EMPRESA, DS_MULTI_EMPRESA]
+    content = {}
+    for result in rv:
+          content = {'produtos': result['str(produtos)'], 'nm_produto': result['nm_produto'], 'cd_estoque': result['cd_estoque'], 'ds_estoque': result['ds_estoque'],  'ds_unidade': result['ds_unidade'],'ds_unidade': result['ds_unidade'],'qt_estoque': result['qt_estoque'], 'cd_multi_empresa': result['cd_multi_empresa'], 'ds_multi_empresa': result['ds_multi_empresa']}
+          Estoque_prontonil.append(content)
+          content = {}
+    return jsonify (Estoque_prontonil)
+         
+
+     
 
 
 if __name__ == '__main__':
